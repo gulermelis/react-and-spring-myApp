@@ -1,1 +1,1 @@
-spring:  datasource:    generate-unique-name: false    username: admin    url: jdbc:h2:./devdb  jpa:    hibernate:      ddl-auto: update    
+spring:  datasource:    generate-unique-name: false   # username: admin   # url: jdbc:h2:./devdb  #jpa:   # hibernate:    #  ddl-auto: update#persistence tarafında db ye yazma tarafında validation yapma      jpa:    properties:      javax:        persistence:          validation:            mode: none #45-spring kimlik doğrulama hataa cevabı          #logging:#  level:#   org.sprinframework: DEBUG

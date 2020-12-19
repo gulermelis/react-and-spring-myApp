@@ -1,5 +1,7 @@
 package com.traveltr.ws.user;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -14,9 +16,9 @@ public class UserService {
 	PasswordEncoder passwordEncoder;
 	
 	//@Autowired //bir tane constructor varsa autowired kullanma zorunluluğu yok.
-	public UserService(UserRepository userRepository) {
+	public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
 		this.userRepository = userRepository;
-		this.passwordEncoder = new BCryptPasswordEncoder();
+		this.passwordEncoder =passwordEncoder;
 	}
 
 	public void save(User user) {
@@ -25,7 +27,19 @@ public class UserService {
 		userRepository.save(user);
 		
 	}
-	
-	
+
+	public List<User> getUsers() {
+	return userRepository.findAll();
+		 
+	}
+
+	public User getByUsername(String username) {
+		return userRepository.findByUsername(username);
+		 
+	}
 	
 }
+
+
+
+

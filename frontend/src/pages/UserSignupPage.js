@@ -1,8 +1,12 @@
 /* eslint-disable no-unused-vars */
 import React, {Component} from 'react';
+import {InputForm} from '../components/InputForm';
 import { signup } from '../api/ApiCalls';
+import {withTranslation} from 'react-i18next';
+import {withApiProgress} from '../shared/ApiProgress';
 
-import {Form,Container,Row,Col,Button, Label, Input,Spinner, FormFeedback} from  'reactstrap';
+import {Form,Container,Row,Col} from  'reactstrap';
+import ButtonWithProgress from '../components/ButtonWithProgress';
 
  class UserSignupPage extends Component{ //class component statefull component
     state= {
@@ -21,20 +25,30 @@ import {Form,Container,Row,Col,Button, Label, Input,Spinner, FormFeedback} from 
     //bu metodu yazmadan önce inputların her birine name attribute vermeliyiz ve bunların değerleri state değişkenleriyle aynı olmalı
     onChange = event => {
         const {name, value} = event.target; // destructuring //parçalama
-        //const value = event.target.value;
-        //const  name = event.target.name;
+        const errors = {...this.state.errors}; // spread operatörüyle state deki errors objesinin kopyasını aldık
+        errors[name] = undefined;
+        if(name === 'password' || name === 'passwordRepeat'){
+            if(name ==='password' && value !== this.state.passwordRepeat ){
+                errors.passwordRepeat = this.props.t('Password mismatch');
+            }else if(name === 'passwordRepeat' && value !== this.state.password){
+                errors.passwordRepeat = this.props.t('Password mismatch');
+            }else{
+                errors.passwordRepeat = undefined;
+            }
+        }
         this.setState({
-            [name] : value
+            [name] : value, //state deki inputların değerini günceller
+            errors // erros objesinin içerisindeki inputlarla ilgili hata mesajlarını da günceller
         });
 
     }
 
     
-    onChangeAgree= event =>{
-        this.setState({
-            agreedClicked: event.target.checked
-        });
-    }
+    // onChangeAgree= event =>{
+    //     this.setState({
+    //         agreedClicked: event.target.checked
+    //     });
+    // }
     
    /*
     onChangeUserName=(event)=>{
@@ -42,22 +56,7 @@ import {Form,Container,Row,Col,Button, Label, Input,Spinner, FormFeedback} from 
         this.setState({
             username:event.target.value
         }); 
-    }
-    onChangeDisplayName= event =>{
-        this.setState({
-            displayName: event.target.value
-        });
-    }
-    onChangePassword= event =>{
-        this.setState({
-            password: event.target.value
-        });
-    }
-    onChangePasswordRepeat= event =>{
-        this.setState({
-            passwordRepeat: event.target.value
-        });
-    }
+
 */
 
     onClickSignup = async event =>{
@@ -108,79 +107,74 @@ import {Form,Container,Row,Col,Button, Label, Input,Spinner, FormFeedback} from 
        try {
         const response = await signup(body);
       } catch (error) {
+        if(error.response.data.validationErrors){
+            this.setState({
+                errors: error.response.data.validationErrors});
+        }
         
-        console.log(error.response.data);
-         //this.setState({errors: error.response.data.validationErrors});
       }
   
       this.setState({ pendingApiCall: false });
 
 
     };
+   
 
 
 
     render(){ /**override method */
-        
+        const {errors} = this.state;
+        const {username, displayName, password,passwordRepeat} = errors;
+        const { t, pendingApiCall} = this.props;
+
         return(
             <Container>
             <Row>
-            <Col xs="1"></Col>
-            <Col xs="9">
+            <Col xs="3"></Col>
+            <Col xs="6">
             <Form>
-                <h3 align="center">Sign Up</h3>
-
-                <div className="form-group">
-                <Label>Username</Label>
+                <h3 align="center">{this.props.t('Sign Up')}</h3>
+                <InputForm name="username" label={t('Username')} error={username} onChange={this.onChange}/>
+                <InputForm name="displayName" label={t('Display Name')} error={displayName} onChange={this.onChange}/>
+                <InputForm name="password" label={t('Password')}error={password} onChange={this.onChange}  type="password"/>
+                <InputForm name="passwordRepeat" label={t('Password Repeat')} error={passwordRepeat} onChange={this.onChange} type="password"/> 
+        
+                  {/*  <div className="form-group">
+                   <Label>Username</Label>
                     <Input name="username" type="text" onChange={ this.onChange
                         //function(event){console.log(event.target.value);} inputun değerine erişebiliyoruz.
                         // classın altında arrow functionla yazalım
-                    }/>
-                    {/* <FormFeedback>{this.state.errors.username}</FormFeedback> */}
-          
-                </div>
-
-                <div className="form-group">
-                    <Label>Display Name</Label>
-                    <Input name="displayName" type="text" onChange={this.onChange}/>
-                </div>
-
-                <div className="form-group">
-                    <Label>Password</Label>
-                    <Input name="password" type="password" onChange={ this.onChange}/>
-                </div>
-
-                <div className="form-group">
-                    <Label>Password Repeat</Label>
-                    <Input name="passwordRepeat" type="password" onChange={this.onChange} />
-                </div>
-
+                    } invalid={username} />
+                    <FormFeedback>{username}</FormFeedback> 
+                    </div> 
+                  */}      
+                  
                 <div className="text-center">
-                <Button type="submit" className="btn btn-block" color="primary"
-                 onClick={ this.onClickSignup}
-                disabled={this.state.pendingApiCall}>
-                {this.state.pendingApiCall ? <Spinner color="light" /> : ''}
-                          Sign Up
-                 </Button>
+                    <ButtonWithProgress
+                        onClick={ this.onClickSignup}
+                        disabled={pendingApiCall || passwordRepeat !== undefined}
+                        pendingApiCall = {pendingApiCall}
+                        text= {t('Sign Up')}
+                    />
                 </div>
                 <p className="forgot-password text-right">
-                    Already registered <b>sign in?</b>
+                    {t('Already registered')} <b>{t('sign in?')}</b>
                 </p>
+
+                
             </Form>
             </Col>
             </Row>
-            </Container>
-            
-               
-
-                
-           
-            
+            </Container>     
        
-
-        )
-
+        );
     }
 }
 
-export default UserSignupPage;
+// translation özellikli bir usersignuppage i import ediyoruz
+//high order componenet => componentimizi baska bir componenetin içine ekleyip, ordan bazı özellikler kazandırmak
+
+const UserSignupPageWithApiProgress = withApiProgress(UserSignupPage, '/api/1.0/users');
+
+const UserSignupPageWithTranslation =  withTranslation()(UserSignupPageWithApiProgress);
+export default UserSignupPageWithTranslation;

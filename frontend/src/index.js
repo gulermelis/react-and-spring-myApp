@@ -1,15 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
-//import App from './App';
 import reportWebVitals from './reportWebVitals';
-import UserSignupPage from './pages/UserSignupPage';
-import 'bootstrap/dist/css/bootstrap.min.css';
 
-ReactDOM.render(
-  <React.StrictMode>
-    <UserSignupPage />
-  </React.StrictMode>,
+import 'bootstrap/dist/css/bootstrap.min.css';
+import './i18n';
+
+import App from './container/App';
+
+ReactDOM.render(<App/>,
+
   document.getElementById('root')
 );
 
