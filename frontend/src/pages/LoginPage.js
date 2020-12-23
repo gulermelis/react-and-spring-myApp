@@ -3,13 +3,14 @@ import {InputForm} from '../components/InputForm';
 import {withTranslation} from 'react-i18next';
 import { login } from '../api/ApiCalls';
 import {Form,Container,Row,Col} from  'reactstrap';
-
-
 import ButtonWithProgress from '../components/ButtonWithProgress'
 import { withApiProgress } from '../shared/ApiProgress';
+import { Authentication } from '../shared/AuthenticationContext';
 
 
 class LoginPage extends Component {
+   
+    static contextType= Authentication;
 
     state={
         username: null,
@@ -31,8 +32,8 @@ class LoginPage extends Component {
   
     onClickLogin =async event =>{
         event.preventDefault();
-        const {username,password} = this.state; //object destructuring
-        const { onLoginSuccess } = this.props;
+        const {username,password} = this.state;
+        const onLoginSuccess = () => { };
         const creds = {  
             username,  // username: this.state.username,  //key-value aynı kelime old. için kısalttık
             password   //password: this.state.password,
@@ -44,9 +45,18 @@ class LoginPage extends Component {
         });
 
        try{
-            await login(creds);  //success senaryo
+           const response = await login(creds);  //success senaryo
             push('/');  
-            onLoginSuccess(username);
+
+            const authState = {
+                ...response.data,
+                password
+               /*  username: username,
+                displayName: response.data.displayName ,  //response dan erişiyoruz, response data 3 ünü de veriyor
+                image:response.data.ima */
+            };
+
+            onLoginSuccess(authState);
 
        }catch(apiError){
             

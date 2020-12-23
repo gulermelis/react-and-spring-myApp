@@ -1,13 +1,20 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import reportWebVitals from './reportWebVitals';
-
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './i18n';
-
 import App from './container/App';
+// import AuthenticationContext from './shared/AuthenticationContext';
+import { Provider } from 'react-redux';
+import configureStore from './redux/configureStore';
 
-ReactDOM.render(<App/>,
+const store = configureStore();
+
+//provider ı çalıştırmak için store objesi vermek şart
+ReactDOM.render(
+     <Provider store={ store }>  
+        <App/> 
+    </Provider>,
 
   document.getElementById('root')
 );
