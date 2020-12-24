@@ -5,12 +5,15 @@ import { login } from '../api/ApiCalls';
 import {Form,Container,Row,Col} from  'reactstrap';
 import ButtonWithProgress from '../components/ButtonWithProgress'
 import { withApiProgress } from '../shared/ApiProgress';
-import { Authentication } from '../shared/AuthenticationContext';
+// import { Authentication } from '../shared/AuthenticationContext';
+import { connect } from 'react-redux';
+import { loginSuccess } from '../redux/authActions';
+
 
 
 class LoginPage extends Component {
    
-    static contextType= Authentication;
+    // static contextType= Authentication;
 
     state={
         username: null,
@@ -33,7 +36,7 @@ class LoginPage extends Component {
     onClickLogin =async event =>{
         event.preventDefault();
         const {username,password} = this.state;
-        const onLoginSuccess = () => { };
+        // const onLoginSuccess = () => { };
         const creds = {  
             username,  // username: this.state.username,  //key-value aynı kelime old. için kısalttık
             password   //password: this.state.password,
@@ -56,7 +59,14 @@ class LoginPage extends Component {
                 image:response.data.ima */
             };
 
-            onLoginSuccess(authState);
+            // onLoginSuccess(authState);
+      /*   
+        const action = {            
+            type: 'login-success', //must
+            payload: authState  
+        } */
+
+        this.props.onLoginSuccess(authState);
 
        }catch(apiError){
             
@@ -103,4 +113,11 @@ class LoginPage extends Component {
     }
 }
 const LoginPageWithTranslation = withTranslation()(LoginPage);
-export default withApiProgress(LoginPageWithTranslation, '/api/1.0/auth');
+
+const mapDispatchToProps = (dispatch) => {
+    return{
+        onLoginSuccess: (authState) => dispatch(loginSuccess(authState))
+    }
+}
+
+export default connect(null, mapDispatchToProps)(withApiProgress(LoginPageWithTranslation, '/api/1.0/auth'));

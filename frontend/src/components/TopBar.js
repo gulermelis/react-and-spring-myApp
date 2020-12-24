@@ -27,8 +27,7 @@ class TopBar extends Component {
 
 
 
-    render() {     
-      console.log(this.props); 
+    render() {    
        // const { isLoggedIn, username} = this.state;
       const { t, username, isLoggedIn, onLogoutSuccess} = this.props;
      

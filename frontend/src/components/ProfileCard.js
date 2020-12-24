@@ -1,7 +1,7 @@
 import React from 'react';
 import { withRouter} from 'react-router-dom';
 // import { Authentication } from '../shared/AuthenticationContext';
- 
+import { connect } from 'react-redux';
 
 /* Eski //Silinen //Lifting
     // burada 2 tane veriye ihtiyacımız var, login olan kullanıcı bilgisi ve bulundugumuz sayfa bilgisi.
@@ -19,11 +19,11 @@ import { withRouter} from 'react-router-dom';
 const ProfileCard = props => {
 
                 const pathUsername = props.match.params.username; 
-         //       const loggedInUsername = value.state.username;
-                const loggedInUsername = props.username;
+        //       const loggedInUsername = value.state.username;
+         //         const loggedInUsername = props.username; // store dan aldık
                 let message= 'we cannot edit';
 
-                if(pathUsername === loggedInUsername){
+                if(pathUsername === props.loggedInUsername){
                     message= 'We can edit';
                 }
                 return <div> {message } </div>
@@ -44,7 +44,12 @@ const ProfileCard = props => {
 // }
 
 
-
+//bu şekilde aldığımız state i componente props vermiş oluyoruz
+const mapStateToProps = (store) => {  
+    return{
+        loggedInUsername: store.username
+    };
+  };
 
 // react router bize aradığımız parametreleri withRouter componenti aracılığıyla versin.
-export default withRouter(ProfileCard);
+export default connect(mapStateToProps)( withRouter(ProfileCard));
