@@ -3,9 +3,7 @@ import { Link } from 'react-router-dom';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { logoutSuccess } from '../redux/authActions';
-// import { Authentication } from '../shared/AuthenticationContext';
  
-
 class TopBar extends Component {
 
     // static contextType= Authentication;

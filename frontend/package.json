@@ -17,6 +17,8 @@
     "react-scripts": "4.0.1",
     "reactstrap": "^8.7.1",
     "redux": "^4.0.5",
+    "redux-thunk": "^2.3.0",
+    "secure-ls": "^1.2.6",
     "web-vitals": "^0.2.4"
   },
   "scripts": {

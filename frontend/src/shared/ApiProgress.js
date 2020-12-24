@@ -49,9 +49,9 @@ export function withApiProgress( WrappedComponent, apiPath){  //higher order com
     
     
         render() {
-            const { pendingApiCall } = this.state;         
+            const pendingApiCall = this.state.pendingApiCall || this.props.pendingApiCall;   // signup da sonra lgin oldugunda birbrini ezmesin diye ekledik row 52 ve 54     
             //  return  <div>   {React.cloneElement(this.props.children, { pendingApiCall })}  </div>
-            return <WrappedComponent  pendingApiCall={pendingApiCall} {... this.props}/>
+            return <WrappedComponent {... this.props} pendingApiCall={pendingApiCall} />
         
         }
     };

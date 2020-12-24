@@ -1,13 +1,11 @@
 import React, { Component } from 'react'
 import {InputForm} from '../components/InputForm';
 import {withTranslation} from 'react-i18next';
-import { login } from '../api/ApiCalls';
 import {Form,Container,Row,Col} from  'reactstrap';
 import ButtonWithProgress from '../components/ButtonWithProgress'
 import { withApiProgress } from '../shared/ApiProgress';
-// import { Authentication } from '../shared/AuthenticationContext';
 import { connect } from 'react-redux';
-import { loginSuccess } from '../redux/authActions';
+import { loginHandler } from '../redux/authActions';
 
 
 
@@ -41,33 +39,17 @@ class LoginPage extends Component {
             username,  // username: this.state.username,  //key-value aynı kelime old. için kısalttık
             password   //password: this.state.password,
         };
-        const { push } = this.props.history;
+
+        const {history, dispatch } = this.props;
+        const { push } = history;
 
         this.setState({
             error: null
         });
 
        try{
-           const response = await login(creds);  //success senaryo
+            await dispatch(loginHandler(creds))
             push('/');  
-
-            const authState = {
-                ...response.data,
-                password
-               /*  username: username,
-                displayName: response.data.displayName ,  //response dan erişiyoruz, response data 3 ünü de veriyor
-                image:response.data.ima */
-            };
-
-            // onLoginSuccess(authState);
-      /*   
-        const action = {            
-            type: 'login-success', //must
-            payload: authState  
-        } */
-
-        this.props.onLoginSuccess(authState);
-
        }catch(apiError){
             
             this.setState({
@@ -114,10 +96,10 @@ class LoginPage extends Component {
 }
 const LoginPageWithTranslation = withTranslation()(LoginPage);
 
-const mapDispatchToProps = (dispatch) => {
+/* const mapDispatchToProps = (dispatch) => {
     return{
         onLoginSuccess: (authState) => dispatch(loginSuccess(authState))
     }
 }
-
-export default connect(null, mapDispatchToProps)(withApiProgress(LoginPageWithTranslation, '/api/1.0/auth'));
+ */
+export default connect()(withApiProgress(LoginPageWithTranslation, '/api/1.0/auth'));

@@ -4,9 +4,11 @@ import {InputForm} from '../components/InputForm';
 import { signup } from '../api/ApiCalls';
 import {withTranslation} from 'react-i18next';
 import {withApiProgress} from '../shared/ApiProgress';
-
 import {Form,Container,Row,Col} from  'reactstrap';
 import ButtonWithProgress from '../components/ButtonWithProgress';
+import { connect } from 'react-redux';
+import { signupHandler } from '../redux/authActions';
+
 
  class UserSignupPage extends Component{ //class component statefull component
     state= {
@@ -15,10 +17,8 @@ import ButtonWithProgress from '../components/ButtonWithProgress';
         displayName:null,
         password:null,
         passwordRepeat:null,
-
         pendingApiCall: false,
         errors :{}
-
     }
 
     //her input için ayrı ayrı change fonksiyonu yazmak yerine: 
@@ -62,6 +62,9 @@ import ButtonWithProgress from '../components/ButtonWithProgress';
     onClickSignup = async event =>{
         event.preventDefault(); //browserın bizim yerimize formu göndermye calısmasını engelliyoruz
         
+        const {history, dispatch } = this.props;
+        const { push } = history;
+
         const {username, displayName, password }= this.state;
         
         const body = {
@@ -104,12 +107,17 @@ import ButtonWithProgress from '../components/ButtonWithProgress';
          *bu callback foksyionların çağrılmasını bekliyoruz ancak o durumda bu asenkron blogun çalışmasının bittiğinden emin olabiliriz.
         */
 
-       try {
-        const response = await signup(body);
-      } catch (error) {
-        if(error.response.data.validationErrors){
+       try {      
+        
+        await dispatch(signupHandler(body));
+        push('/');
+
+        }catch (error) {
+       
+         if(error.response.data.validationErrors){
             this.setState({
-                errors: error.response.data.validationErrors});
+                errors: error.response.data.validationErrors
+            });
         }
         
       }
@@ -174,7 +182,10 @@ import ButtonWithProgress from '../components/ButtonWithProgress';
 // translation özellikli bir usersignuppage i import ediyoruz
 //high order componenet => componentimizi baska bir componenetin içine ekleyip, ordan bazı özellikler kazandırmak
 
-const UserSignupPageWithApiProgress = withApiProgress(UserSignupPage, '/api/1.0/users');
+const UserSignupPageWithApiProgressForSignupRequest = withApiProgress(UserSignupPage, '/api/1.0/users');
+const UserSignupPageWithApiProgressForAuthRequest = withApiProgress(UserSignupPageWithApiProgressForSignupRequest, 'api/1.0/auth');
 
-const UserSignupPageWithTranslation =  withTranslation()(UserSignupPageWithApiProgress);
-export default UserSignupPageWithTranslation;
+const UserSignupPageWithTranslation =  withTranslation()(UserSignupPageWithApiProgressForAuthRequest);
+export default connect()(UserSignupPageWithTranslation);
+
+//connect e herhangi bir aprametre vermiyoruz dolayısıyla dispatchi paramere olarak alıyor olacağız
