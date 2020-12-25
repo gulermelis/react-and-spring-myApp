@@ -12,9 +12,11 @@ const store = configureStore();
 
 //provider ı çalıştırmak için store objesi vermek şart
 ReactDOM.render(
-     <Provider store={ store }>  
-        <App/> 
-    </Provider>,
+  <Provider store={ store }>  
+    {/* <AuthenticationContext> */}
+          <App/> 
+    {/* </AuthenticationContext>, */}
+  </Provider>,
 
   document.getElementById('root')
 );

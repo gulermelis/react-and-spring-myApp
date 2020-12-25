@@ -1,12 +1,16 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { logoutSuccess } from '../redux/authActions';
- 
-class TopBar extends Component {
+// import { Authentication } from '../shared/AuthenticationContext';
+// import React, { useContext } from "react";
+
+const TopBar = (props) => {
 
     // static contextType= Authentication;
+
+    // onst context = useContext(Authentication);
 
     /* //lifting state up için app.js e kopyalıyoruz. üst componentn old. içib
     state={
@@ -23,66 +27,68 @@ class TopBar extends Component {
       this.props.dispatch(logoutSuccess());
     } */
 
+ // const { isLoggedIn, username} = this.state;
 
-
-    render() {    
-       // const { isLoggedIn, username} = this.state;
-      const { t, username, isLoggedIn, onLogoutSuccess} = this.props;
+ const { t, username, isLoggedIn, onLogoutSuccess} = props; // usecontext ekleyince burayı commentledik
      
+// const { t } = props;
+// const { onLogoutSuccess, state } = context;
+// const {username, isLoggedIn} = state;
       
       
-      let links= (
-               <ul className="navbar-nav ml-auto ">
-                   <li className=" nav-item">
-                     <Link className="nav-link" to="/login">
-                       {t('Login')}
-                     </Link>
-                   </li>
-                   <li className=" nav-item">
-                     <Link className="nav-link" to="/signup">
-                       {t('Sign Up')}
-                     </Link>
-                   </li>
-                 </ul>
-        );
-   
-        if(isLoggedIn){
-               links=(
-                   <ul className="navbar-nav ml-auto ">
-                   <li >
-                      <Link className="nav-link" to={`/user/${username}`}>
-                           {username}
-                      </Link>
-                   </li>
-                   <li onClick = {onLogoutSuccess} style={{CURSOR: 'pointer'}}>  
-                   {/* Logout a tıkladığımızda app deki onLogoutSuccess fonks na callback yapacak. */}
-                       <Link className="nav-link" to="/">
-                       {t('Logout')}
-                       </Link>
-                   </li>
-                 </ul>
-               );
-        }
-   
-       return (
-         <div className="shadow-sm bg-dark mb-2">
-           <nav className="navbar navbar-dark text-white container navbar-expand sticky-top">
-             <Link className="navbar-brand" to="/">
-               SocialAPP
-             </Link>
-               {links}
-           </nav>
-         </div>
-       );
-       
+ let links= (
+          <ul className="navbar-nav ml-auto ">
+              <li className=" nav-item">
+                <Link className="nav-link" to="/login">
+                  {t('Login')}
+                </Link>
+              </li>
+              <li className=" nav-item">
+                <Link className="nav-link" to="/signup">
+                  {t('Sign Up')}
+                </Link>
+              </li>
+            </ul>
+   );
 
-   
-    }
+   if(isLoggedIn){
+          links=(
+              <ul className="navbar-nav ml-auto ">
+              <li >
+                 <Link className="nav-link" to={`/user/${username}`}>
+                      {username}
+                 </Link>
+              </li>
+              <li onClick = {onLogoutSuccess} style={{CURSOR: 'pointer'}}>  
+              {/* Logout a tıkladığımızda app deki onLogoutSuccess fonks na callback yapacak. */}
+                  <Link className="nav-link" to="/">
+                  {t('Logout')}
+                  </Link>
+              </li>
+            </ul>
+          );
+   }
+
+  return (
+    <div className="shadow-sm bg-dark mb-2">
+      <nav className="navbar navbar-dark text-white container navbar-expand sticky-top">
+        <Link className="navbar-brand" to="/">
+          SocialAPP
+        </Link>
+          {links}
+      </nav>
+    </div>
+  );
+  
+
+
 }
 
 const TopBarWithTranslation = withTranslation()(TopBar);
 
-//redux ın store ını alır
+
+
+  //redux ın store ını alır
 const mapStateToProps = (store) => {   //bu fonks ile redux daki state bilgisini alıyoruz
   return{
     //store //boyle dersek statedeki tüm bilgileri alırız
@@ -104,4 +110,5 @@ const mapDispatchToProps = dispatch  => {
 //redux terminolojiside aksiyon gönderme işine dispatch diyoruz
 export default connect(mapStateToProps, mapDispatchToProps)(TopBarWithTranslation);
 
-//connect: redux a connect olurken reduxtan neyi alacağımız ile ilgili opsiyonlar sunuyor
+//connect: redux a connect olurken reduxtan neyi alacağımız ile ilgili opsiyonlar sunuyor 
+

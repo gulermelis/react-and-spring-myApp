@@ -1,7 +1,8 @@
-import React from 'react';
+import React from "react";
 import { withRouter} from 'react-router-dom';
 // import { Authentication } from '../shared/AuthenticationContext';
 import { connect } from 'react-redux';
+
 
 /* Eski //Silinen //Lifting
     // burada 2 tane veriye ihtiyacımız var, login olan kullanıcı bilgisi ve bulundugumuz sayfa bilgisi.
@@ -17,6 +18,8 @@ import { connect } from 'react-redux';
     */
 
 const ProfileCard = props => {
+
+    // const context = useContext(Authentication)
 
                 const pathUsername = props.match.params.username; 
         //       const loggedInUsername = value.state.username;
@@ -52,4 +55,4 @@ const mapStateToProps = (store) => {
   };
 
 // react router bize aradığımız parametreleri withRouter componenti aracılığıyla versin.
-export default connect(mapStateToProps)( withRouter(ProfileCard));
+export default connect(mapStateToProps)( withRouter(ProfileCard)); 

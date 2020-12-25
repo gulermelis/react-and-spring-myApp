@@ -1,3 +1,6 @@
+// BU COMPONENT UYGULAMANIN GÜNCEL VERSİYONUNDA KULLANILMIYOR
+// HOOKS UN USECONTEXT KULLANIMINI PRATİK HALE GETİRMEK İÇİN KULLANILDI
+// CONTEXT YERINE REDUX KULLANDIK
 import React, { Component } from 'react'
 
 export const Authentication= React.createContext(); //Contexti tanımlamak için kull. bir obje oluşturduk.

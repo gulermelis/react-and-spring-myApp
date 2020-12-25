@@ -1,5 +1,4 @@
 /* eslint-disable no-unused-vars */
-import React, {Component} from 'react';
 import {InputForm} from '../components/InputForm';
 import { signup } from '../api/ApiCalls';
 import {withTranslation} from 'react-i18next';
@@ -8,38 +7,74 @@ import {Form,Container,Row,Col} from  'reactstrap';
 import ButtonWithProgress from '../components/ButtonWithProgress';
 import { connect } from 'react-redux';
 import { signupHandler } from '../redux/authActions';
+import React, { useEffect, useState } from "react";
 
 
- class UserSignupPage extends Component{ //class component statefull component
-    state= {
-        username: null, // 
-        agreedClicked: false,
-        displayName:null,
-        password:null,
-        passwordRepeat:null,
-        pendingApiCall: false,
-        errors :{}
-    }
+ const UserSignupPage = (props) => { //class component statefull component
+    const [form, setForm] = useState({
+         username: null, // 
+         displayName:null,
+         password:null,
+         passwordRepeat:null,
+    });
+
+    // const [username, setUsername] = useState(); //username için state objesi
+    // const [displayName, setDisplayName] = useState();
+    // const [password, setPassword] = useState();
+    // const [passwordRepeat, setPasswordRepeat] = useState();
+    
+    const [errors, setErrors] = useState({});
+
+
+    // state= {
+    //     username: null, // 
+    //     agreedClicked: false,
+    //     displayName:null,
+    //     password:null,
+    //     passwordRepeat:null,
+    //     pendingApiCall: false,
+    //     errors :{}
+    // }
 
     //her input için ayrı ayrı change fonksiyonu yazmak yerine: 
     //bu metodu yazmadan önce inputların her birine name attribute vermeliyiz ve bunların değerleri state değişkenleriyle aynı olmalı
-    onChange = event => {
-        const {name, value} = event.target; // destructuring //parçalama
-        const errors = {...this.state.errors}; // spread operatörüyle state deki errors objesinin kopyasını aldık
-        errors[name] = undefined;
-        if(name === 'password' || name === 'passwordRepeat'){
-            if(name ==='password' && value !== this.state.passwordRepeat ){
-                errors.passwordRepeat = this.props.t('Password mismatch');
-            }else if(name === 'passwordRepeat' && value !== this.state.password){
-                errors.passwordRepeat = this.props.t('Password mismatch');
+   
+    const onChange = event => {
+        const {name, value} = event.target; // destructuring 
+        //inputlardaki apssword mismatch inputlar değişmeye başaladığında kaybolması için..
+       
+        // const errorsCopy = { ...errors };   
+        // errorsCopy[name] = undefined;
+        setErrors((previousErrors) => ({ ...previousErrors, [name]: undefined }))
+
+        // const errors = {...this.state.errors}; // spread operatörüyle state deki errors objesinin kopyasını aldık
+        // errors[name] = undefined;
+      
+      
+        /*    row-164 passwordRepeatError ekleyince bu bloga gerek kalmıyor
+            if(name === 'password' || name === 'passwordRepeat'){
+            if(name ==='password' && value !== form.passwordRepeat ){
+                errorsCopy.passwordRepeat = t('Password mismatch');
+            }else if(name === 'passwordRepeat' && value !== form.password){
+                errorsCopy.passwordRepeat = t('Password mismatch');
             }else{
-                errors.passwordRepeat = undefined;
-            }
-        }
-        this.setState({
-            [name] : value, //state deki inputların değerini günceller
-            errors // erros objesinin içerisindeki inputlarla ilgili hata mesajlarını da günceller
-        });
+                errorsCopy.passwordRepeat = undefined;
+             }
+         } */
+        
+      
+        
+        // const formCopy = {...errors };
+        // formCopy[name] = value;
+        // setForm(formCopy);
+        setForm((previousForm) => ({...previousForm, 
+            [name]: value //değişmekte olan input için yeni deger
+        }))
+       
+        // this.setState({
+        //     [name] : value, //state deki inputların değerini günceller
+        //     errors // erros objesinin içerisindeki inputlarla ilgili hata mesajlarını da günceller
+        // });
 
     }
 
@@ -59,13 +94,13 @@ import { signupHandler } from '../redux/authActions';
 
 */
 
-    onClickSignup = async event =>{
+   const onClickSignup = async event =>{
         event.preventDefault(); //browserın bizim yerimize formu göndermye calısmasını engelliyoruz
         
-        const {history, dispatch } = this.props;
+        const {history, dispatch } = props;
         const { push } = history;
 
-        const {username, displayName, password }= this.state;
+        const {username, displayName, password }= form;
         
         const body = {
             /**Eğer key ve value için kullanılan isimlendirmeler aynıysa sadece bir tanesini kullanmak yeterli 
@@ -82,7 +117,6 @@ import { signupHandler } from '../redux/authActions';
         
         // axios.post('http://localhost:8080/api/1.0/users', body);  !! çalışır ama sağlıklı değil
     
-        this.setState({pendingApiCall: true});
         
         //aşağıdaki gibi ayarlarsak crossorigine de gerek kalmaz.(row84)
        // axios.post('/api/1.0/users', body) //package.json da proxy ayarına backend portunu belirtmeliyiz.
@@ -108,75 +142,72 @@ import { signupHandler } from '../redux/authActions';
         */
 
        try {      
-        
-        await dispatch(signupHandler(body));
-        push('/');
+            await dispatch(signupHandler(body));
+            push('/');
 
         }catch (error) {
        
          if(error.response.data.validationErrors){
-            this.setState({
-                errors: error.response.data.validationErrors
-            });
-        }
-        
-      }
-  
-      this.setState({ pendingApiCall: false });
-
-
+            // this.setState({
+            //     errors: error.response.data.validationErrors
+            // });
+        }       
+      } 
+    //   this.setState({ pendingApiCall: false });
     };
    
 
 
 
-    render(){ /**override method */
-        const {errors} = this.state;
-        const {username, displayName, password,passwordRepeat} = errors;
-        const { t, pendingApiCall} = this.props;
+    // const {errors} = this.state;
+    const {username: usernameError, displayName: displayNameError, password: passwordError, passwordRepeat: passwordRepeatErro} = errors;
+    const { t, pendingApiCall} = props;
 
-        return(
-            <Container>
-            <Row>
-            <Col xs="3"></Col>
-            <Col xs="6">
-            <Form>
-                <h3 align="center">{this.props.t('Sign Up')}</h3>
-                <InputForm name="username" label={t('Username')} error={username} onChange={this.onChange}/>
-                <InputForm name="displayName" label={t('Display Name')} error={displayName} onChange={this.onChange}/>
-                <InputForm name="password" label={t('Password')}error={password} onChange={this.onChange}  type="password"/>
-                <InputForm name="passwordRepeat" label={t('Password Repeat')} error={passwordRepeat} onChange={this.onChange} type="password"/> 
-        
-                  {/*  <div className="form-group">
-                   <Label>Username</Label>
-                    <Input name="username" type="text" onChange={ this.onChange
-                        //function(event){console.log(event.target.value);} inputun değerine erişebiliyoruz.
-                        // classın altında arrow functionla yazalım
-                    } invalid={username} />
-                    <FormFeedback>{username}</FormFeedback> 
-                    </div> 
-                  */}      
-                  
-                <div className="text-center">
-                    <ButtonWithProgress
-                        onClick={ this.onClickSignup}
-                        disabled={pendingApiCall || passwordRepeat !== undefined}
-                        pendingApiCall = {pendingApiCall}
-                        text= {t('Sign Up')}
-                    />
-                </div>
-                <p className="forgot-password text-right">
-                    {t('Already registered')} <b>{t('sign in?')}</b>
-                </p>
-
-                
-            </Form>
-            </Col>
-            </Row>
-            </Container>     
-       
-        );
+    let passwordRepeatError;
+    if(form.password !== form.passwordRepeat){
+        passwordRepeatError=t('Password mismatch');
     }
+    return(
+        <Container>
+        <Row>
+        <Col xs="3"></Col>
+        <Col xs="6">
+        <Form>
+            <h3 align="center">{t('Sign Up')}</h3>
+            <InputForm name="username" label={t('Username')} error={usernameError} onChange={onChange}/>
+            <InputForm name="displayName" label={t('Display Name')} error={displayNameError} onChange={onChange}/>
+            <InputForm name="password" label={t('Password')} error={passwordError} onChange={onChange}  type="password"/>
+            <InputForm name="passwordRepeat" label={t('Password Repeat')} error={passwordRepeatErro} onChange={onChange} type="password"/> 
+    
+              {/*  <div className="form-group">
+               <Label>Username</Label>
+                <Input name="username" type="text" onChange={ this.onChange
+                    //function(event){console.log(event.target.value);} inputun değerine erişebiliyoruz.
+                    // classın altında arrow functionla yazalım
+                } invalid={username} />
+                <FormFeedback>{username}</FormFeedback> 
+                </div> 
+              */}      
+              
+            <div className="text-center">
+                <ButtonWithProgress
+                    onClick={ onClickSignup}
+                    disabled={pendingApiCall || passwordRepeatErro !== undefined}
+                    pendingApiCall = {pendingApiCall}
+                    text= {t('Sign Up')}
+                />
+            </div>
+            <p className="forgot-password text-right">
+                {t('Already registered')} <b>{t('sign in?')}</b>
+            </p>
+
+            
+        </Form>
+        </Col>
+        </Row>
+        </Container>     
+   
+    );
 }
 
 // translation özellikli bir usersignuppage i import ediyoruz
